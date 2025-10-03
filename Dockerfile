@@ -1,22 +1,24 @@
-# Базовый образ с Python 3.12
-FROM python:3.12-slim
+FROM vastai/pytorch:latest
 
-# Установим system-зависимости для nemo и звуковых пакетов
+# System deps + build tools
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    ffmpeg \
-    git \
+    ffmpeg git build-essential libsndfile1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Копируем файл с зависимостями
-COPY requirements.txt /app/requirements.txt
+# Upgrade pip/setuptools
+RUN pip install --upgrade pip setuptools wheel packaging Cython
 
-# Устанавливаем зависимости
+# Копируем зависимости без NeMo GitHub
+COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
-# Копируем весь проект
+# Ставим NeMo toolkit[all] + GitHub ASR пакет в один шаг
+RUN pip install --upgrade --ignore-installed \
+    nemo_toolkit[all] \
+    "git+https://github.com/NVIDIA/NeMo.git@main#egg=nemo_toolkit[asr]"
+
+# Копируем проект
 COPY . /app
 WORKDIR /app
 
-# Команда по умолчанию (можно менять на свой файл)
 CMD ["python", "main.py"]
