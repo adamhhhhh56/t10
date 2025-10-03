@@ -1,8 +1,5 @@
 wget
 pydub
-nemo
-nemo_toolkit[all]
-git+https://github.com/NVIDIA/NeMo.git@main#egg=nemo_toolkit[asr]
 nvidia-ml-py
 cuda-python>=12.3
 nvidia-ml-py3
@@ -13,3 +10,4 @@ onnxruntime-gpu
 Cython
 numpy<2.0
 tqdm
+setuptools<80.0.0
